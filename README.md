@@ -1,5 +1,5 @@
 # Formula.SimpleAuthServer
-A simple OAuth2 / OpenID Connect wrapper for Identity Server
+A simple OAuth2 / OpenID Connect Authorization Server wrapper for Identity Server
 
 # Adding Authentication Server
 To in enable the auth server uncomment tw sections in the Startup.cs
