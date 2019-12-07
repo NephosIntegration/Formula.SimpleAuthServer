@@ -2,8 +2,8 @@
 A simple OAuth2 / OpenID Connect Authorization Server wrapper for Identity Server
 
 # Adding Authentication Server
-To in enable the auth server uncomment tw sections in the Startup.cs
-- **ConfigureServices** - services.AddSimpleAuthServer(this.Configuration, typeof(Startup).Assembly.GetName().Name);
+To in enable the auth server uncomment two sections in the Startup.cs
+- **ConfigureServices** - services.AddSimpleAuthServer(this.Configuration);
 - **Configure** - app.UseSimpleAuthServer();
 
 ## Defining Resources and Clients
