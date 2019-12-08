@@ -11,14 +11,26 @@ namespace Formula.SimpleAuthServer
         {
             bool useInMemoryAuthProvider = bool.Parse(configuration.GetValue<String>("InMemoryAuthProvider"));
 
-            // uncomment, if you want to add an MVC-based UI
-            //services.AddControllersWithViews();
+            useInMemoryAuthProvider = true;
 
             if (authConfig == null) authConfig = SimpleAuthServerConfigDemo.Get();
 
-            var builder = services.AddIdentityServer()
-                .AddInMemoryApiResources(authConfig.GetApiResources())
-                .AddInMemoryClients(authConfig.GetClients());
+            var builder = services.AddIdentityServer();
+
+            if (useInMemoryAuthProvider) 
+            {
+                var identityResources = authConfig.GetIdentityResources();
+                if (identityResources != null) builder.AddInMemoryIdentityResources(identityResources);
+
+                var apiResources = authConfig.GetApiResources();
+                if (apiResources != null) builder.AddInMemoryApiResources(apiResources);
+
+                var clients = authConfig.GetClients();
+                if (clients != null) builder.AddInMemoryClients(clients);
+
+                var testUsers = authConfig.GetTestUsers();
+                if (testUsers != null) builder.AddTestUsers(testUsers);
+            }
 
             builder.AddDeveloperSigningCredential();
 
