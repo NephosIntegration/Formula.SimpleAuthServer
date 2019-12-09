@@ -19,7 +19,7 @@ This can be passed as the second parameter to AddSimpleAuthServer.
 For demo / testing purposes, if you do not define your own resource and client list, there are some "defaults" enabled out of the box.
 
 * 1 resource named "api".
-* 2 Clients
+* 3 Clients
     * Non-interactive user (used for authorization only)
         * Client ID / Secret = cliet / secret
         * Grant TYpe = Client Credentials
@@ -29,7 +29,11 @@ For demo / testing purposes, if you do not define your own resource and client l
         * Grant Type = Code
         * Allowed Scopes = [openid, profile, api]
         * When SimpleServerUI is in use, you can log in with this user from the views provided
-
+    * Browser Based Client
+        * Client ID = js
+        * Grant Type = Implicit
+        * Allowed Scopes = [openid, profile, api]
+        * (expects the browser client to be running on localhost:8080)
 
 # Internal Routes 
 * Discovery Document - [http://localhost:5000/.well-known/openid-configuration](http://localhost:5000/.well-known/openid-configuration)

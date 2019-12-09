@@ -29,47 +29,29 @@ namespace Formula.SimpleAuthServer
 
         public IEnumerable<Client> GetClients()
         {
-            return new List<Client>
+            return new List<Client>()
             {
-                new Client
-                {
+                new NonInteractiveClient(new SimpleClientDetails() {
                     ClientId = "client",
-
-                    // no interactive user, use the clientid/secret for authentication
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-
-                    // secret for authentication
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
-
-                    // scopes that client has access to
-                    AllowedScopes = { "api" }
-                },
-                // interactive ASP.NET Core MVC client
-                new Client
-                {
+                    Secret = "secret",
+                    AllowedScopes = new List<String>() { "api" }
+                }),
+                new InteractiveClient(new SimpleClientDetails() {
                     ClientId = "OpenIDConnectDemo",
-                    ClientSecrets = { new Secret("secret".Sha256()) },
-
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RequireConsent = false,
-                    RequirePkce = true,
-
-                    // where to redirect to after login
-                    RedirectUris = { "http://localhost:5000/signin-oidc" },
-
-                    // where to redirect to after logout
-                    PostLogoutRedirectUris = { "http://localhost:5000/signout-callback-oidc" },
-
-                    AllowedScopes = new List<string>
-                    {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        "api"
-                    }
-                }                
+                    Secret = "secret",
+                    BaseUri = "http://localhost:5000",
+                    RedirectUri = "signin-oidc",
+                    LogoutRedirectUri = "signout-callback-oidc",
+                    AllowedScopes = new List<String>() { "api" }
+                }),
+                new BrowserClient(new SimpleClientDetails() {
+                    ClientId = "js",
+                    ClientName = "Browser Client",
+                    BaseUri = "http://localhost:8080",
+                    RedirectUri = "callback.html",
+                    LogoutRedirectUri = "logout.html",
+                    AllowedScopes = new List<String>() { "api" }
+                })
             };
         }
 
