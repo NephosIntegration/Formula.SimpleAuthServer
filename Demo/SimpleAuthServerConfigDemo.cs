@@ -39,7 +39,7 @@ namespace Formula.SimpleAuthServer
                 new InteractiveClient(new SimpleClientDetails() {
                     ClientId = "OpenIDConnectDemo",
                     Secret = "secret",
-                    BaseUri = "http://localhost:5000",
+                    BaseUri = "http://localhost:5002",
                     RedirectUri = "signin-oidc",
                     LogoutRedirectUri = "signout-callback-oidc",
                     AllowedScopes = new List<String>() { "api" }

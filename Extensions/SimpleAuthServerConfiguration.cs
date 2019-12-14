@@ -11,7 +11,7 @@ namespace Formula.SimpleAuthServer
 {
     public static class SimpleAuthServerConfiguration
     {
-        public static IServiceCollection AddSimpleAuthServer(this IServiceCollection services, IConfiguration configuration, String migrationsAssembly, String connectionName = "DefaultConnection", ISimpleAuthServerConfig authConfig  = null)
+        public static IIdentityServerBuilder AddSimpleAuthServer(this IServiceCollection services, IConfiguration configuration, String migrationsAssembly, String connectionName = "DefaultConnection", ISimpleAuthServerConfig authConfig  = null)
         {
             bool useInMemoryAuthProvider = bool.Parse(configuration.GetValue<String>("InMemoryAuthProvider"));
 
@@ -52,7 +52,7 @@ namespace Formula.SimpleAuthServer
 
             builder.AddDeveloperSigningCredential();
 
-            return services;
+            return builder;
         }
 
         public static void InitializeDatabase(IApplicationBuilder app, ISimpleAuthServerConfig authConfig  = null)
@@ -99,7 +99,7 @@ namespace Formula.SimpleAuthServer
 
             if (authConfig == null) authConfig = SimpleAuthServerConfigDemo.Get();
 
-            SimpleAuthServerConfiguration.InitializeDatabase(app, authConfig);
+            if (!useInMemoryAuthProvider) SimpleAuthServerConfiguration.InitializeDatabase(app, authConfig);
 
             return app.UseIdentityServer();
         }
