@@ -50,6 +50,8 @@ namespace Formula.SimpleAuthServer
 
             }
 
+            services.AddLocalApiAuthentication();
+
             builder.AddDeveloperSigningCredential();
 
             return builder;
