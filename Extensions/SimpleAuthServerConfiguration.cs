@@ -17,7 +17,13 @@ namespace Formula.SimpleAuthServer
 
             if (authConfig == null) authConfig = SimpleAuthServerConfigDemo.Get();
 
-            var builder = services.AddIdentityServer();
+            var builder = services.AddIdentityServer(options =>
+            {
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+            });
 
             if (useInMemoryAuthProvider) 
             {
@@ -49,6 +55,8 @@ namespace Formula.SimpleAuthServer
                 });
 
             }
+
+            services.AddLocalApiAuthentication();
 
             builder.AddDeveloperSigningCredential();
 

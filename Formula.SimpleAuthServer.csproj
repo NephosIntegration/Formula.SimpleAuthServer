@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Formula.SimpleMembership\Formula.SimpleMembership.csproj" />
+    <ProjectReference Include="..\Formula.Core\Formula.Core.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="IdentityServer4" Version="3.0.2" />
