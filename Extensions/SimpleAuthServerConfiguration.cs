@@ -100,7 +100,7 @@ namespace Formula.SimpleAuthServer
                                 throw new Exception(result.Errors.First().Description);
                             }
 
-                            var createdUser = userMgr.FindByNameAsync("alice").Result;
+                            var createdUser = userMgr.FindByNameAsync(testUser.Username).Result;
 
                             result = userMgr.AddClaimsAsync(createdUser, testUser.Claims).Result;
                             if (!result.Succeeded)
