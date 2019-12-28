@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using System.Linq;
+using Formula.SimpleMembership;
 
 namespace Formula.SimpleAuthServer
 {
@@ -63,41 +64,88 @@ namespace Formula.SimpleAuthServer
             return builder;
         }
 
-        public static void InitializeDatabase(IApplicationBuilder app, ISimpleAuthServerConfig authConfig  = null)
+        public static void InitializeDatabase(IApplicationBuilder app, IConfiguration configuration, ISimpleAuthServerConfig authConfig  = null)
         {
             if (authConfig == null) authConfig = SimpleAuthServerConfigDemo.Get();
 
+            bool useInMemoryAuthProvider = bool.Parse(configuration.GetValue<String>("InMemoryAuthProvider"));
+
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-
-                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                context.Database.Migrate();
-                if (!context.Clients.Any())
+                if (serviceScope.ServiceProvider.GetServices<SimpleMembershipDbContext>().Count() > 0)
                 {
-                    foreach (var client in authConfig.GetClients())
+                    var membershiDbpContext = serviceScope.ServiceProvider.GetRequiredService<SimpleMembershipDbContext>();
+
+                    if (!useInMemoryAuthProvider) membershiDbpContext.Database.Migrate();
+
+                    if (!membershiDbpContext.Users.Any())
                     {
-                        context.Clients.Add(client.ToEntity());
+                        var userMgr = serviceScope.ServiceProvider.GetRequiredService<AppUserManager>();
+                        
+                        foreach(var testUser in authConfig.GetTestUsers())
+                        {
+                            var user = new ApplicationUser();
+                            var email = testUser.Claims.Where(t => t.Type == IdentityModel.JwtClaimTypes.Email).FirstOrDefault().Value;
+                            user.ConcurrencyStamp = DateTime.Now.Ticks.ToString();
+                            user.Email = email;
+                            user.EmailConfirmed = true;
+                            //user.Id = UserSettings.UserId;
+                            user.NormalizedEmail = email;
+                            user.NormalizedUserName = testUser.Username;
+                            user.UserName = testUser.Username;
+
+                            var result = userMgr.CreateAsync(user, testUser.Password).Result;
+                            if (!result.Succeeded)
+                            {
+                                throw new Exception(result.Errors.First().Description);
+                            }
+
+                            var createdUser = userMgr.FindByNameAsync("alice").Result;
+
+                            result = userMgr.AddClaimsAsync(createdUser, testUser.Claims).Result;
+                            if (!result.Succeeded)
+                            {
+                                throw new Exception(result.Errors.First().Description);
+                            }
+                        }
                     }
-                    context.SaveChanges();
                 }
 
-                if (!context.IdentityResources.Any())
+                if (serviceScope.ServiceProvider.GetServices<PersistedGrantDbContext>().Count() > 0)
                 {
-                    foreach (var resource in authConfig.GetIdentityResources())
-                    {
-                        context.IdentityResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
+                    if (!useInMemoryAuthProvider) serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
                 }
 
-                if (!context.ApiResources.Any())
+                if (serviceScope.ServiceProvider.GetServices<ConfigurationDbContext>().Count() > 0)
                 {
-                    foreach (var resource in authConfig.GetApiResources())
+                    var configDbContext = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                    if (!useInMemoryAuthProvider) configDbContext.Database.Migrate();
+                    if (!configDbContext.Clients.Any())
                     {
-                        context.ApiResources.Add(resource.ToEntity());
+                        foreach (var client in authConfig.GetClients())
+                        {
+                            configDbContext.Clients.Add(client.ToEntity());
+                        }
+                        configDbContext.SaveChanges();
                     }
-                    context.SaveChanges();
+
+                    if (!configDbContext.IdentityResources.Any())
+                    {
+                        foreach (var resource in authConfig.GetIdentityResources())
+                        {
+                            configDbContext.IdentityResources.Add(resource.ToEntity());
+                        }
+                        configDbContext.SaveChanges();
+                    }
+
+                    if (!configDbContext.ApiResources.Any())
+                    {
+                        foreach (var resource in authConfig.GetApiResources())
+                        {
+                            configDbContext.ApiResources.Add(resource.ToEntity());
+                        }
+                        configDbContext.SaveChanges();
+                    }
                 }
             }
         }
@@ -107,7 +155,7 @@ namespace Formula.SimpleAuthServer
 
             if (authConfig == null) authConfig = SimpleAuthServerConfigDemo.Get();
 
-            if (!useInMemoryAuthProvider) SimpleAuthServerConfiguration.InitializeDatabase(app, authConfig);
+            SimpleAuthServerConfiguration.InitializeDatabase(app, configuration, authConfig);
 
             return app.UseIdentityServer();
         }
