@@ -27,7 +27,7 @@ namespace Formula.SimpleAuthServer
         //
         // Summary:
         //     Specifies URI to return tokens or authorization codes to
-        public string RedirectUri { get; set; }
+        public ICollection<string> RedirectUris { get; set; }
         //
         // Summary:
         //     Specifies URI to redirect to after logout
@@ -50,10 +50,14 @@ namespace Formula.SimpleAuthServer
             this.ClientId = clientDetails.ClientId;
             this.ClientName = clientDetails.ClientName ?? clientDetails.ClientId;
 
-            this.RedirectUris = new List<String>
+            if (clientDetails.RedirectUris != null && clientDetails.RedirectUris.Count > 0)
             {
-                this.GetFullUri(clientDetails.BaseUri, clientDetails.RedirectUri)
-            };
+                this.RedirectUris = new List<String>();
+                foreach(var redirectUri in clientDetails.RedirectUris)
+                {
+                    this.RedirectUris.Add(this.GetFullUri(clientDetails.BaseUri, redirectUri));
+                }                
+            }
 
             this.PostLogoutRedirectUris = new List<String>
             {

@@ -40,7 +40,7 @@ namespace Formula.SimpleAuthServer
                     ClientId = "OpenIDConnectDemo",
                     Secret = "secret",
                     BaseUri = "http://localhost:5002",
-                    RedirectUri = "signin-oidc",
+                    RedirectUris = new List<String>() { "signin-oidc" },
                     LogoutRedirectUri = "signout-callback-oidc",
                     AllowedScopes = new List<String>() { "api" }
                 }),
@@ -48,7 +48,7 @@ namespace Formula.SimpleAuthServer
                     ClientId = "js",
                     ClientName = "Browser Client",
                     BaseUri = "http://localhost:8080",
-                    RedirectUri = "callback.html",
+                    RedirectUris = new List<String>() { "callback.html" },
                     LogoutRedirectUri = "logout.html",
                     AllowedScopes = new List<String>() { "api" }
                 })
