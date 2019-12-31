@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Formula.SimpleAuthServer
 {
-    public class AccountAuthService : MembershipAccountService
+    public class AccountAuthService : MembershipService
     {
         protected readonly IAuthenticationSchemeProvider _schemeProvider;
         protected readonly IIdentityServerInteractionService _interaction;
@@ -71,7 +71,7 @@ namespace Formula.SimpleAuthServer
 
             if (results.IsSuccessful)
             {
-                var user = results.GetDataAs<ApplicationUser>();
+                var user = results.GetDataAs<LoginResults>().User;
                 await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
             }
             else

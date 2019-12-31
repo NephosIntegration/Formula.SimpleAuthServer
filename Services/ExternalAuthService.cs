@@ -17,7 +17,7 @@ using IdentityServer4.Events;
 
 namespace Formula.SimpleAuthServer
 {
-    public class ExternalAuthService : MembershipAccountService
+    public class ExternalAuthService : MembershipService
     {
         protected readonly IIdentityServerInteractionService _interaction;
         protected readonly IClientStore _clientStore;
