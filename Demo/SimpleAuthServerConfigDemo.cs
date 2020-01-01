@@ -16,6 +16,9 @@ namespace Formula.SimpleAuthServer
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
+                new IdentityResources.Email(),
+                new IdentityResources.Phone(),
+                new IdentityResources.Address(),
             };
         }
 

@@ -74,6 +74,7 @@ namespace Formula.SimpleAuthServer
             {
                 IdentityServerConstants.StandardScopes.OpenId,
                 IdentityServerConstants.StandardScopes.Profile,
+                IdentityServerConstants.StandardScopes.Email,
             };
 
             if (clientDetails.AllowedScopes != null && clientDetails.AllowedScopes.Count > 0)
