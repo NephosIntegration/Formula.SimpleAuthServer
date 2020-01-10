@@ -12,7 +12,7 @@ namespace Formula.SimpleAuthServer
 {
     public static class SimpleAuthServerConfiguration
     {
-        public static IIdentityServerBuilder AddSimpleAuthServer(this IServiceCollection services, IConfiguration configuration, String migrationsAssembly, String connectionName = "DefaultConnection", ISimpleAuthServerConfig authConfig  = null)
+        public static IIdentityServerBuilder AddSimpleAuthServer(this IServiceCollection services, IConfiguration configuration, String migrationsAssembly, String connectionName = "DefaultConnection", ISimpleAuthServerConfig authConfig  = null, String publicOrigin = null)
         {
             bool useInMemoryAuthProvider = bool.Parse(configuration.GetValue<String>("InMemoryAuthProvider"));
 
@@ -24,6 +24,10 @@ namespace Formula.SimpleAuthServer
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
+                if (!String.IsNullOrEmpty(publicOrigin))
+                {
+                    options.PublicOrigin = publicOrigin;
+                }
             });
 
             if (useInMemoryAuthProvider) 
